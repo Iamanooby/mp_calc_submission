@@ -2,7 +2,7 @@
 
 def mergesort(array, byfunc=None):
   len_array = len(array)
-  if len_array==1:
+  if len_array<=1:
     pass
   else:
     arrayL_len  = len_array//2
@@ -34,6 +34,16 @@ def mergesort(array, byfunc=None):
           array[k] = arrayR[j]
           k+=1
           j+=1
+      # #everything below is to account for un registered scores
+      # elif isinstance(left_array_element,int) and not isinstance(right_array_element,int):
+      #   array[k] = arrayL[i]
+      #   k+=1
+      #   i+=1
+      # elif not isinstance(left_array_element,int) and isinstance(right_array_element,int):
+      #   array[k] = arrayR[j]
+      #   k+=1
+      #   j+=1
+      # else:#this basically just appends neither but adds j and i
         
     
     while i< arrayL_len:
@@ -47,6 +57,8 @@ def mergesort(array, byfunc=None):
         j+=1
 
   return array
+
+    
 
     
 
