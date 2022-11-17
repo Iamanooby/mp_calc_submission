@@ -18,45 +18,22 @@ def mergesort(array, byfunc=None):
     while i< arrayL_len and j < arrayR_len:
       left_array_element = byfunc(arrayL[i])
       right_array_element = byfunc(arrayR[j])
-
-      if not isinstance(left_array_element,int):
-        i+=1 # skip this element
-      
-      if not isinstance(right_array_element,int):
-        j+=1 # skip this element
-
-      if isinstance(left_array_element,int) and isinstance(right_array_element,int):
-        if left_array_element<=right_array_element:
-          array[k] = arrayL[i]
-          k+=1
-          i+=1
-        else:
-          array[k] = arrayR[j]
-          k+=1
-          j+=1
-      # #everything below is to account for un registered scores
-      # elif isinstance(left_array_element,int) and not isinstance(right_array_element,int):
-      #   array[k] = arrayL[i]
-      #   k+=1
-      #   i+=1
-      # elif not isinstance(left_array_element,int) and isinstance(right_array_element,int):
-      #   array[k] = arrayR[j]
-      #   k+=1
-      #   j+=1
-      # else:#this basically just appends neither but adds j and i
-        
-    
-    while i< arrayL_len:
+      if left_array_element<=right_array_element:
         array[k] = arrayL[i]
         k+=1
         i+=1
-
-    while j< arrayR_len:
+      else:
         array[k] = arrayR[j]
         k+=1
         j+=1
+  
+    if i< arrayL_len: array[k:] = arrayL[i:]
+
+    if j< arrayR_len: array[k:] = arrayR[j:]
 
   return array
+
+    
 
     
 
@@ -128,35 +105,38 @@ class EvaluateExpression:
 
     operand_stack = Stack()
     operator_stack = Stack()
+    
     expression = self.insert_space()
     tokens = expression.split()
-    for char in tokens:
+    try:#catch errors and return "invalid expression" in the except block
+        for index,char in enumerate(tokens):
 
-      
-      if char in "0123456789":
-        operand_stack.push(int(char))
-      elif char in "+-":
-        while(len(operator_stack._items) > 0 and operator_stack.peek() not in "()" ):
-          self.process_operator(operand_stack, operator_stack)
-        operator_stack.push(char)
-      elif char in "*/":
-        while(len(operator_stack._items) > 0 and operator_stack.peek() in "*/"):
-          self.process_operator(operand_stack, operator_stack)
-        operator_stack.push(char)      
-      elif char == "(":
-        operator_stack.push(char)
-      elif char == ")":
-        while not(operator_stack.peek() == "("):
-          self.process_operator( operand_stack, operator_stack)
-        operator_stack.pop()# to remove ( "("
-      # print(char, operand_stack._items, operator_stack._items)
 
-      
-    while (len(operator_stack._items) > 0):
-      self.process_operator(operand_stack, operator_stack)
-    
-    return operand_stack.peek()
-    
+          if char.isnumeric():#check if its a value. if it is, push it into the stack
+            operand_stack.push(int(char))
+          elif char in "+-":#check if its an operator. if it is call the process operator function. 
+            while(len(operator_stack._items) > 0 and operator_stack.peek() not in "()" ):#check for bracket using PEMDAS logic
+              self.process_operator(operand_stack, operator_stack)
+            operator_stack.push(char)#push final result into stack
+          elif char in "*/":#check if its an operator. if it is call the process operator function. 
+            while(len(operator_stack._items) > 0 and operator_stack.peek() in "*/"):#check if its still an expression
+              self.process_operator(operand_stack, operator_stack)#keep calling process_operator until its not an */ operator anymore
+            operator_stack.push(char)#push final result into stack      
+          elif char == "(":#check if its a bracket, if it is push the bracket into stack
+            operator_stack.push(char)
+          elif char == ")":
+            while not(operator_stack.peek() == "("):#if its a close bracket, evaluate everything inside the bracket until the stack reaches an open bracket
+              self.process_operator( operand_stack, operator_stack)
+            operator_stack.pop()# to remove ( "("
+          # print(char, operand_stack._items, operator_stack._items)
+
+
+        while (len(operator_stack._items) > 0):
+          self.process_operator(operand_stack, operator_stack)
+
+        return operand_stack.peek()
+    except:#some expression has caused the code to break; invalid expression gets returned instead
+        return "invalid expression"
 
 
 
